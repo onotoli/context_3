@@ -3,9 +3,9 @@ from pygame.draw import *
 from random import randint
 
 pygame.init()
-FPS = 60
+FPS = 90
 screen_width = 1200
-screen_heigt = 900
+screen_heigt = 700
 screen = pygame.display.set_mode((screen_width, screen_heigt))
 
 RED = (255, 0, 0)
@@ -52,7 +52,6 @@ class Ball:
             return True
         else:
             return False
-
 
     def x_reflection(self):
         '''
@@ -108,7 +107,7 @@ def stats():
     Выводит на экран статистику игрока по окончании игры
     '''
     myfont = pygame.font.SysFont("monospace", 50)
-    wave_final = myfont.render(f'Пройденно волн: {str(wave)} ', 1, (255, 255, 255))
+    wave_final = myfont.render(f'Пройденно волн: {str(wave - 1)} ', 1, (255, 255, 255))
     screen.blit(wave_final, (270, 0.15 * screen_heigt))
     balls_final = myfont.render(
         f'Попаданий по шарам: {balls_counter}', 1,
@@ -126,8 +125,8 @@ def stats():
 
 finished = False
 wave = 1
-balls_counter = 0 # Счетчик попаданий
-miss_counter = 0 # Счетчик промахов
+balls_counter = 0  # Счетчик попаданий
+miss_counter = 0  # Счетчик промахов
 amount_of_balls = 5  # Количество шаров
 amount_of_balls_on_the_display = amount_of_balls  # Количество шариков на экране
 balls = [0] * amount_of_balls  # Список шаров
@@ -146,25 +145,26 @@ while not finished:  # Основной цикл
                 balls[i].move()
                 balls[i].reflection()
 
-        for event in pygame.event.get(): # Выход из игры
+        for event in pygame.event.get():  # Выход из игры
             if event.type == pygame.QUIT:
                 screen.fill(BLACK)
                 stats()
                 pygame.display.update()
-                clock.tick(FPS / 150)
+                clock.tick(FPS / 200)
                 finished = True
-            elif event.type == pygame.MOUSEBUTTONDOWN: # Удаление с экрана убитых шариков, ддобавление очков игроку
+            elif event.type == pygame.MOUSEBUTTONDOWN:  # Удаление с экрана убитых шариков, добавление очков игроку
                 for i in range(amount_of_balls):
                     if balls[i].is_hit() and live[i] == True:
                         live[i] = False
                         balls_counter += 1
                         amount_of_balls_on_the_display -= 1
                         miss = False
-                        miss_counter += 0.2
+                        miss_counter -= i / amount_of_balls
+                        break
                     else:
-                        miss_counter += 0.2
+                        miss_counter += 1 / amount_of_balls
 
-    else: # Создание новой волны
+    else:  # Создание новой волны
         wave += 1
         amount_of_balls_on_the_display = amount_of_balls
         for i in range(amount_of_balls):
